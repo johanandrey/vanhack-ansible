@@ -1,0 +1,12 @@
+{
+    "Resources" : {
+
+        "my_super_bucket" : {
+            "Type" : "AWS::S3::Bucket",
+            "Properties": {
+                "DeletionPolicy": "Retain"
+            }
+        }
+
+    }
+}
