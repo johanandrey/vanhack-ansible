@@ -4,3 +4,4 @@
 # @email: johanandrey.baron@gmail.co
 # @description: Ansible project for vanhack test
 
+ami -> vpc -> cloudformation -> elb

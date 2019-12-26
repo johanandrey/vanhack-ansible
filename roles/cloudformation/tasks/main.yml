@@ -1,0 +1,8 @@
+- cloudformation:
+    stack_name: "vanhack-cloudformation"
+    state: "present"
+    region: "us-east-1"
+    template: "files/myapp.json"
+    temlate_parameters:        
+        ImageId: "{{ image_id }}"
+        InstanceType: "{{ instance_type }}"
