@@ -1,0 +1,21 @@
+---
+- name: Playbook to create the test environment of a webapp
+  hosts: localhost
+  gather_facts: false
+
+  vars_files:
+    - "./properties.env"
+    - aws_access_key: "{{ AWS_ACCESS_KEY }}"
+    - aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+
+ # roles:
+ #   - role: aws_ssh_key
+
+  environment: 
+    - "{{aws_access_key}}"
+    - "{{aws_secret_access_key}}"
+
+  tasks:
+    - debug:
+        msg: "El access key es: {{ aws_secret_access_key }}"
+

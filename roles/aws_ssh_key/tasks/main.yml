@@ -1,0 +1,10 @@
+- name: Deleting old key
+  ec2_key:
+    name: devops_key
+    state: absent
+
+- name: Creating new key
+  ec2_key:
+    name: devops_key
+    key_material: "{{ lookup('file', 'files/id_rsa.pub') }}"
+    state: present
