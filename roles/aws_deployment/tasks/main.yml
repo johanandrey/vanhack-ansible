@@ -1,0 +1,22 @@
+- name: "show stack"
+  debug:
+    msg: "STACK: {{ item }}"
+  with_items: 
+    - "{{ stack.stack_outputs }}"
+  when: stack is defined
+
+- name: "register inventory"
+  ec2_instance_info:
+    aws_access_key: "{{ aws_access_key_id }}"
+    aws_secret_key: "{{ aws_secret_access_key }}"
+    region: "{{ aws_region }}"
+    filters:
+        "tag:environment": "{{environment_tag}}"
+  register: salida
+
+- name: "SHOW INSTANCES"
+  debug:
+    msg: "{{ item.network_interfaces }}"
+  with_items:
+    - "{{ salida.instances }}"
+  register: ips

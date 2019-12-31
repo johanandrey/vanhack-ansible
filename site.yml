@@ -4,18 +4,23 @@
   gather_facts: false
 
   vars_files:
-    - "./properties.env"
-    - aws_access_key: "{{ AWS_ACCESS_KEY }}"
+    - "./credentials.yml"
+
+  vars:
+    - aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
     - aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+    - aws_region: "us-east-1"
+    - key_name: "devops_key"
+    - environment_tag: "myapp-dev"
+    - stack_name: "vanhackcloudformation-dev"
 
- # roles:
- #   - role: aws_ssh_key
-
-  environment: 
-    - "{{aws_access_key}}"
-    - "{{aws_secret_access_key}}"
-
+  roles:
+    - { role: aws_ssh_key, tags: aws_ssh_key }
+    - { role: aws_cloudformation, tags: aws_cloudformation }
+    - { role: aws_deployment, tags: aws_deployment }
+ 
   tasks:
     - debug:
-        msg: "El access key es: {{ aws_secret_access_key }}"
+        msg: "El aws_secret_access_key es: {{ aws_secret_access_key }}"
 
+        
