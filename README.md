@@ -9,4 +9,4 @@
 ami -> vpc -> cloudformation -> elb
 
 Play:
-ansible-playbook site.yml --vault-password-file=.vault_pass.txt
+ansible-playbook site.yml --vault-password-file=.vault_pass.txt 

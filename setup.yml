@@ -1,0 +1,67 @@
+---
+- hosts:  dev-vanhack
+  gather_facts: false
+  user: andrey
+  become: yes
+
+  tasks:
+    - name: disable security (for now)
+      command: setenforce 0
+
+    - name: selinux on permissive
+      lineinfile:
+        path: /etc/selinux/config
+        regexp: '^SELINUX='
+        line: SELINUX=permissive
+
+    - name: update the system
+      yum:
+        name: '*'
+        state: latest
+        exclude: kernel*
+
+    - name: install tools
+      yum:
+        name: 
+            - tmux
+            - vim
+            - net-tools
+            - epel-release
+            - yum-utils
+            - bzip2
+            - unzip
+        state: present
+    
+    - name: add remi repo
+      yum:
+        name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+
+    - name: Yum clean
+      command: yum clean all
+
+    - name: install php-fpm 
+      yum:
+        name: 
+            - php73
+            - php73-php-pgsql
+            - php73-php-soap
+            - php73-php-xml
+            - php73-php-devel
+            - php73-php-gd 
+            - php73-php-mbstring
+            - php73-php-fpm
+            - php73-php-curl
+            - php73-php-pear
+            - php73-php-pecl-mcrypt
+            - php73-php-pecl-zip
+            - php73-php-bcmath
+            - php73-php-pdo
+            - php73-php-cli
+        state: latest
+
+    - name: install nginx
+      yum:
+        name:
+            - nginx
+        state: latest
+        

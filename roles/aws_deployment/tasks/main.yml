@@ -12,11 +12,28 @@
     region: "{{ aws_region }}"
     filters:
         "tag:environment": "{{environment_tag}}"
-  register: salida
+  register: ec2_i
 
-- name: "SHOW INSTANCES"
-  debug:
-    msg: "{{ item.network_interfaces }}"
-  with_items:
-    - "{{ salida.instances }}"
-  register: ips
+
+- name: Add instance to host group
+  add_host:
+    hostname: "{{ item }}"
+    groupname: ec2_group
+  loop: "{{ ec2_i | json_query('instances[*].network_interfaces[0].association.public_ip') }}"
+
+- name: Wait for SSH to come up
+  local_action:
+    module: wait_for
+    host: "{{ item }}"
+    port: 22
+    delay: 10
+    timeout: 120
+  loop: "{{ groups.ec2_group }}"
+
+  - name: Wait for SSH to come up
+    module: wait_for
+    host: "{{ item }}"
+    port: 22
+    delay: 10
+    timeout: 120
+  loop: "{{ groups.ec2_group }}"

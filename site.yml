@@ -1,6 +1,6 @@
 ---
 - name: Playbook to create the test environment of a webapp
-  hosts: localhost
+  hosts: localhost:ec2_group
   gather_facts: false
 
   vars_files:
