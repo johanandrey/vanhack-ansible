@@ -60,6 +60,15 @@
         dest: /usr/bin/php
         state: link
     
+    - name: Copy composer installer
+      copy:
+        src: roles/aws_deployment_setup/files/composer-setup.php
+        dest: /tmp/composer-setup.php
+        mode: '0744'
+    
+    - name: Install composer
+      command: php /tmp/composer-setup.php --install-dir=/usr/local/bin --filename=composer
+    
     - name: Website directory
       file:
         path: "{{ app_dir }}"

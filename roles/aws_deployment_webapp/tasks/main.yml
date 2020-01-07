@@ -4,3 +4,18 @@
     repo={{ webapp_repo }}
     dest={{ app_dir }}
     version={{ branch }}
+    update=yes
+    force=yes
+
+- name: Install dependencies
+  composer:
+    command: install
+    working_dir: "{{ app_dir }}"
+
+- name: fix permissions cache
+  file:
+    path: "{{ app_dir }}"
+    owner: nginx
+    group: nginx
+    state: directory
+    recurse: yes
