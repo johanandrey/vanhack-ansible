@@ -1,0 +1,6 @@
+---
+- name: Clone repository
+  git: >
+    repo={{ webapp_repo }}
+    dest={{ app_dir }}
+    version={{ branch }}

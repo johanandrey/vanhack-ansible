@@ -1,0 +1,17 @@
+- name: set DB_DATABASE
+  lineinfile: 
+    dest: "{{ app_dir }}/.env" 
+    regexp: '^DB_DATABASE='
+    line: DB_DATABASE=laravel
+
+- name: set DB_USERNAME
+  lineinfile: 
+    dest: "{{ app_dir }}/.env"
+    regexp: '^DB_USERNAME='
+    line: DB_USERNAME=laravel
+
+- name: set DB_PASSWORD
+  lineinfile: 
+    dest: "{{ app_dir }}/.env"
+    regexp: '^DB_PASSWORD='
+    line: DB_PASSWORD=sdfsdf  

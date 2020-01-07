@@ -1,0 +1,71 @@
+- block:
+  
+    - name: add epel repo
+      yum:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+        
+    - name: add remi repo
+      yum:
+        name: http://rpms.remirepo.net/enterprise/remi-release-7.rpm
+  
+    - name: Yum clean
+      command: yum clean all
+
+    - name: Yum refresh 
+      command: yum repolist
+
+    - name: install tools
+      yum:
+        name: "{{ utils }}"
+        state: present
+
+    - name: install php-fpm & nginx
+      yum:
+        name: "{{ packages }}"
+        state: present
+
+    - name: update the system
+      yum:
+        name: '*'
+        state: latest
+        exclude: kernel*
+
+    - name: enable php73-fpm service
+      systemd:
+        name: php73-php-fpm
+        enabled: yes 
+      
+    - name: enable nginx service
+      systemd:
+        name: nginx
+        enabled: yes
+    
+    - name: copy nginx config
+      copy:
+        src: roles/aws_deployment_setup/files/nginx.conf
+        dest: /etc/nginx/nginx.conf
+        owner: nginx
+      notify: Restart nginx
+    
+    - name: copy php-fpm config
+      copy:
+        src: roles/aws_deployment_setup/files/www.conf
+        dest: /etc/opt/remi/php73/php-fpm.d/www.conf
+        owner: root
+      notify: Restart php-fpm
+    
+    - name: fix php binary
+      file:
+        src: /usr/bin/php73
+        dest: /usr/bin/php
+        state: link
+    
+    - name: Website directory
+      file:
+        path: "{{ app_dir }}"
+        state: directory
+        mode: '0755'
+        owner: nginx
+
+  when: ansible_distribution == 'Amazon'
+  remote_user: ec2-user

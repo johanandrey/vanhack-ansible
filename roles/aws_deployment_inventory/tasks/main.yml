@@ -1,10 +1,3 @@
-- name: "show stack"
-  debug:
-    msg: "STACK: {{ item }}"
-  with_items: 
-    - "{{ stack.stack_outputs }}"
-  when: stack is defined
-
 - name: "register inventory"
   ec2_instance_info:
     aws_access_key: "{{ aws_access_key_id }}"
@@ -14,11 +7,13 @@
         "tag:environment": "{{environment_tag}}"
   register: ec2_i
 
-
 - name: Add instance to host group
   add_host:
     hostname: "{{ item }}"
-    groupname: ec2_group
+    groups: ec2_group
+    ansible_user: 'ec2-user'
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_host: "{{ item }}"
   loop: "{{ ec2_i | json_query('instances[*].network_interfaces[0].association.public_ip') }}"
 
 - name: Wait for SSH to come up
@@ -26,14 +21,6 @@
     module: wait_for
     host: "{{ item }}"
     port: 22
-    delay: 10
-    timeout: 120
-  loop: "{{ groups.ec2_group }}"
-
-  - name: Wait for SSH to come up
-    module: wait_for
-    host: "{{ item }}"
-    port: 22
-    delay: 10
+    delay: 1
     timeout: 120
   loop: "{{ groups.ec2_group }}"

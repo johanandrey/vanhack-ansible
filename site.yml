@@ -1,5 +1,5 @@
 ---
-- name: Playbook to create the test environment of a webapp
+- name: Playbook to create the test environment of a webapp using AWS CloudFormation
   hosts: localhost:ec2_group
   gather_facts: false
 
@@ -17,10 +17,20 @@
   roles:
     - { role: aws_ssh_key, tags: aws_ssh_key }
     - { role: aws_cloudformation, tags: aws_cloudformation }
-    - { role: aws_deployment, tags: aws_deployment }
- 
-  tasks:
-    - debug:
-        msg: "El aws_secret_access_key es: {{ aws_secret_access_key }}"
+    - { role: aws_deployment_inventory, tags: [aws_inventory,aws_deployment] }
 
-        
+- name: Deploy webapp
+  hosts: ec2_group
+  become: yes
+  gather_facts: True
+
+  vars:
+    - app_dir: "/opt/www"
+
+  roles:
+    - { role: aws_deployment_setup, tags: [aws_setup,aws_deployment] }
+    - { role: aws_deployment_webapp, tags: [aws_webapp,aws_deployment] }
+    - { role: aws_deployment_db, tags: [aws_db,aws_deployment] }
+
+
+       

@@ -143,7 +143,7 @@
       }
   ,
       "AWSRegionArch2AMI" : {
-        "us-east-1"        : {"HVM64" : "ami-0080e4c5bc078760e", "HVMG2" : "ami-0aeb704d503081ea6"},
+        "us-east-1"        : {"HVM64" : "ami-00068cd7555f543d5", "HVMG2" : "ami-00068cd7555f543d5"},
         "us-west-2"        : {"HVM64" : "ami-01e24be29428c15b2", "HVMG2" : "ami-0fe84a5b4563d8f27"},
         "us-west-1"        : {"HVM64" : "ami-0ec6517f6edbf8044", "HVMG2" : "ami-0a7fc72dc0e51aa77"},
         "eu-west-1"        : {"HVM64" : "ami-08935252a36e25f85", "HVMG2" : "ami-0d5299b1c6112c3c7"},
@@ -188,7 +188,26 @@
         "Type" : "AWS::EC2::SecurityGroup",
         "Properties" : {
           "GroupDescription" : "SSH access",
-          "SecurityGroupIngress" : [{ "IpProtocol" : "tcp", "FromPort" : "22", "ToPort" : "22", "CidrIp" : { "Ref" : "SSHLocation" }}]
+          "SecurityGroupIngress" : [
+            { 
+              "IpProtocol" : "tcp", 
+              "FromPort" : "22", 
+              "ToPort" : "22", 
+              "CidrIp" : { "Ref" : "SSHLocation" }
+            },
+            { 
+              "IpProtocol" : "tcp", 
+              "FromPort" : "80", 
+              "ToPort" : "80", 
+              "CidrIp" : "0.0.0.0/0"
+            },
+            { 
+              "IpProtocol" : "tcp", 
+              "FromPort" : "433", 
+              "ToPort" : "433", 
+              "CidrIp" : "0.0.0.0/0"
+            }
+          ]
         }
       }
     },
