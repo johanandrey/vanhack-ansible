@@ -1,0 +1,12 @@
+---
+- name: php-fpm_restart
+  become: true
+  service:
+    name: php73-php-fpm
+    state: restarted
+
+- name: nginx_restart
+  become: true
+  service:
+    name: nginx
+    state: restarted

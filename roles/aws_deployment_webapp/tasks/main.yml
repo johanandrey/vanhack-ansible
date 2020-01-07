@@ -1,0 +1,26 @@
+---
+- name: Clone repository
+  git: >
+    repo={{ webapp_repo }}
+    dest={{ app_dir }}
+    version={{ branch }}
+    update=yes
+    force=yes
+
+- name: Copy environment file 
+  copy:
+    src: roles/aws_deployment_webapp/files/environment
+    dest: "{{ app_dir }}/.env"
+
+- name: Install PHP dependencies
+  composer:
+    command: install
+    working_dir: "{{ app_dir }}"
+
+- name: fix permissions cache
+  file:
+    path: "{{ app_dir }}"
+    owner: nginx
+    group: nginx
+    state: directory
+    recurse: yes

@@ -1,0 +1,26 @@
+- name: "register inventory"
+  ec2_instance_info:
+    aws_access_key: "{{ aws_access_key_id }}"
+    aws_secret_key: "{{ aws_secret_access_key }}"
+    region: "{{ aws_region }}"
+    filters:
+        "tag:environment": "{{environment_tag}}"
+  register: ec2_i
+
+- name: Add instance to host group
+  add_host:
+    hostname: "{{ item }}"
+    groups: ec2_group
+    ansible_user: 'ec2-user'
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+    ansible_ssh_host: "{{ item }}"
+  loop: "{{ ec2_i | json_query('instances[*].network_interfaces[0].association.public_ip') }}"
+
+- name: Wait for SSH to come up
+  local_action:
+    module: wait_for
+    host: "{{ item }}"
+    port: 22
+    delay: 1
+    timeout: 120
+  loop: "{{ groups.ec2_group }}"

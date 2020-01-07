@@ -1,0 +1,45 @@
+---
+- name: Playbook to create the test environment of a webapp using AWS CloudFormation
+  hosts: localhost:ec2_group
+  gather_facts: false
+
+  vars_files:
+    - "./credentials.yml"
+
+  vars:
+    - aws_access_key_id: "{{ AWS_ACCESS_KEY_ID }}"
+    - aws_secret_access_key: "{{ AWS_SECRET_ACCESS_KEY }}"
+    - aws_region: "us-east-1"
+    - key_name: "devops_key"
+    - environment_tag: "myapp-dev"
+    - myapp_stack: "vanhackcloudformation-dev"
+
+  roles:
+    - { role: aws_ssh_key, tags: aws_ssh_key }
+    - { role: aws_cloudformation, tags: aws_cloudformation }
+    - { role: aws_deployment_inventory, tags: [aws_inventory,aws_deployment] }
+
+- name: Deploy webapp
+  hosts: ec2_group
+  become: yes
+  gather_facts: True
+  remote_user: ec2-user
+
+  vars_files:
+    - "./credentials.yml"
+
+  vars:
+    - app_dir: "/opt/www"
+
+  roles:
+    - { role: aws_deployment_setup, tags: [aws_setup,aws_deployment] }
+    - { role: aws_deployment_webapp, tags: [aws_webapp,aws_deployment] }
+    - { role: aws_deployment_db, tags: [aws_db,aws_deployment] }
+    - { role: ssh_key_vanhack, tags: [ssh_key_vanhack] }
+       
+  tasks:
+    - name: Call handlers
+      meta: flush_handlers
+      tags: 
+        - aws_webapp
+        - aws_deployment

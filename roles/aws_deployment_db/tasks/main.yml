@@ -1,0 +1,33 @@
+- block:
+
+    - name: Set DB_DATABASE
+      lineinfile: 
+        dest: "{{ app_dir }}/.env" 
+        regexp: '^DB_DATABASE='
+        line: DB_DATABASE={{DBName}}
+
+    - name: Set DB_USERNAME
+      lineinfile: 
+        dest: "{{ app_dir }}/.env"
+        regexp: '^DB_USERNAME='
+        line: DB_USERNAME={{DBUsername}}
+
+    - name: Set DB_PASSWORD
+      lineinfile: 
+        dest: "{{ app_dir }}/.env"
+        regexp: '^DB_PASSWORD='
+        line: DB_PASSWORD={{DBPassword}}
+
+    - name: Set DB_HOST
+      lineinfile: 
+        dest: "{{ app_dir }}/.env"
+        regexp: '^DB_HOST='
+        line: DB_HOST={{hostvars['localhost']['db_endpoint']}}
+  when: hostvars['localhost']['db_endpoint'] is defined
+
+- name: Update database
+  command: php artisan migrate:fresh --seed
+  args:
+    chdir: "{{ app_dir }}"
+
+        
