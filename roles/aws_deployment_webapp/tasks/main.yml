@@ -7,7 +7,12 @@
     update=yes
     force=yes
 
-- name: Install dependencies
+- name: Copy environment file 
+  copy:
+    src: roles/aws_deployment_webapp/files/environment
+    dest: "{{ app_dir }}/.env"
+
+- name: Install PHP dependencies
   composer:
     command: install
     working_dir: "{{ app_dir }}"

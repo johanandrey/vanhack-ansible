@@ -1,0 +1,5 @@
+- name: Add vanhack public SSH key
+  lineinfile: 
+    path: "/home/ec2-user/.ssh/authorized_keys"
+    line: "{{ ssh_public }}"
+    create: yes

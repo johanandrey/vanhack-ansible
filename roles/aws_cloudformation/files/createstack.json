@@ -17,15 +17,55 @@
   ,
         "ConstraintDescription" : "must be a valid EC2 instance type."
       },
+
+      "WebServerSecurityGroup" : {
+        "Description" : "The EC2 security group name",
+        "Type" : "String",
+        "MinLength": "3",
+        "MaxLength": "40",
+        "Default": "vanhackcloudformation-dev-sg"
+      },
   
       "SSHLocation": {
-        "Description": "Lockdown SSH access to the bastion host (default can be accessed from anywhere)",
+        "Description": "Access from SSH",
         "Type": "String",
         "MinLength": "9",
         "MaxLength": "18",
         "Default": "0.0.0.0/0",
         "AllowedPattern": "(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})\\.(\\d{1,3})/(\\d{1,2})",
         "ConstraintDescription": "must be a valid CIDR range of the form x.x.x.x/x."
+      },
+
+      "DBName" : {
+        "Description" : "The database name",
+        "Type" : "String",
+        "MinLength": "3",
+        "MaxLength": "40",
+        "Default": "vanhackdb"
+      },
+
+      "DBClass" : {
+        "Description" : "The database class",
+        "Type" : "String",
+        "MinLength": "3",
+        "MaxLength": "40",
+        "Default": "db.t2.micro"
+      },
+
+      "DBUsername" : {
+        "Description" : "The database master username",
+        "Type" : "String",
+        "MinLength": "3",
+        "MaxLength": "20",
+        "Default": "vanhackuser"
+      },
+
+      "DBPassword" : {
+        "Description" : "The database password",
+        "Type" : "String",
+        "MinLength": "3",
+        "MaxLength": "40",
+        "Default": "jsjjl1006"
       }
     },
   
@@ -188,6 +228,7 @@
         "Type" : "AWS::EC2::SecurityGroup",
         "Properties" : {
           "GroupDescription" : "EC2 access",
+          "GroupName": { "Ref": "WebServerSecurityGroup" },
           "SecurityGroupIngress" : [
             { 
               "IpProtocol" : "tcp", 
@@ -209,13 +250,38 @@
             }
           ]
         }
-      }
+      },
+
+      "DBInstance" : {
+        "Type": "AWS::RDS::DBInstance",
+        "Properties": {
+           "DBName"            : { "Ref" : "DBName" },
+           "Engine"            : "postgres",
+           "MasterUsername"    : { "Ref" : "DBUsername" },
+           "DBInstanceClass"   : { "Ref" : "DBClass" },
+           "DBSecurityGroups"  : [ { "Ref" : "DBSecurityGroup" } ],
+           "AllocatedStorage"  : "5",
+           "MasterUserPassword": { "Ref" : "DBPassword" }
+        }
+     },
+     
+     "DBSecurityGroup": {
+        "Type": "AWS::RDS::DBSecurityGroup",
+        "Properties": {
+           "DBSecurityGroupIngress": { "EC2SecurityGroupName": { "Ref": "WebServerSecurityGroup" } },
+           "GroupDescription": "Frontend Access"
+        }
+     }
     },
   
     "Outputs" : {
       "Instance" : {
         "Value" : { "Fn::GetAtt" : [ "EC2Instance", "PublicDnsName" ] }, 
         "Description" : "DNS Name of the newly created EC2 instance"
+      },
+      "Database" : {
+        "Value" : {"Fn::GetAtt": ["DBInstance","Endpoint.Address"]},
+        "Description" : "Database endpoint"
       }
     }
   }

@@ -2,7 +2,7 @@
   cloudformation:
     aws_access_key: "{{ aws_access_key_id }}"
     aws_secret_key: "{{ aws_secret_access_key }}"
-    stack_name: "{{ stack_name }}"
+    stack_name: "{{ myapp_stack }}"
     state: "present"
     region: "{{ aws_region }}"
     tags:
@@ -12,4 +12,13 @@
         KeyName: "{{ key_name }}"
         InstanceType: "{{ instance_type }}"
         SSHLocation: "0.0.0.0/0"
+        WebServerSecurityGroup: "MiEC2SG"
+        DBName: "{{ DBName }}"
+        DBUsername: "{{ DBUsername }}"
+        DBPassword: "{{ DBPassword }}"
+
+    on_create_failure: DELETE
   register: stack
+
+- set_fact:
+    db_endpoint: "{{stack.stack_outputs.Database}}"

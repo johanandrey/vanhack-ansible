@@ -12,7 +12,7 @@
     - aws_region: "us-east-1"
     - key_name: "devops_key"
     - environment_tag: "myapp-dev"
-    - stack_name: "vanhackcloudformation-dev"
+    - myapp_stack: "vanhackcloudformation-dev"
 
   roles:
     - { role: aws_ssh_key, tags: aws_ssh_key }
@@ -23,6 +23,10 @@
   hosts: ec2_group
   become: yes
   gather_facts: True
+  remote_user: ec2-user
+
+  vars_files:
+    - "./credentials.yml"
 
   vars:
     - app_dir: "/opt/www"
@@ -31,6 +35,11 @@
     - { role: aws_deployment_setup, tags: [aws_setup,aws_deployment] }
     - { role: aws_deployment_webapp, tags: [aws_webapp,aws_deployment] }
     - { role: aws_deployment_db, tags: [aws_db,aws_deployment] }
-
-
+    - { role: ssh_key_vanhack, tags: [ssh_key_vanhack] }
        
+  tasks:
+    - name: Call handlers
+      meta: flush_handlers
+      tags: 
+        - aws_webapp
+        - aws_deployment
